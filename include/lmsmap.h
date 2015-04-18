@@ -18,3 +18,15 @@
 
 #pragma once
 
+#include<string>
+#include<vector>
+
+template<typename K, typename V>
+class LmsMap {
+public:
+
+
+private:
+    std::vector<K> keys;
+    std::vector<V> values;
+};

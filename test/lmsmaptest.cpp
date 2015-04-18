@@ -17,7 +17,19 @@
  */
 
 #include"lmsmap.h"
+#include<cassert>
+#include<iostream>
+
+void default_test() {
+    LmsMap<std::string, int> m;
+}
 
 int main(int argc, char **argv) {
+#ifdef NDEBUG
+    std::cout << "NDEBUG defined, tests won't work.\n";
+    return 1;
+#else
+    default_test();
     return 0;
+#endif
 }
