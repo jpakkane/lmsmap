@@ -40,6 +40,13 @@ to do all the legal stuff of copyright assignments and all that.
 I have no interest in that so therefore submissions from third parties
 are not accepted. Sorry. Feel free to fork the code on your own, though.
 
+# API stability
+
+There is none.
+
+Under **no** circumstances should you expose this in your public
+headers.
+
 # Contact
 
 jpakkane at gmail dot com
