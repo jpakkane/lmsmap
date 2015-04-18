@@ -151,6 +151,8 @@ public:
     FlatHolder() {}
     ~FlatHolder() {}
 
+    const std::vector<value_type>& get_data() const { return data; }
+
     FlatIterator<FlatHolder, K> begin(){
         return FlatIterator<FlatHolder, K>(this, 0);
     }
@@ -221,6 +223,9 @@ public:
         return keys.size();
     }
 
+    size_type keyblock_size() const {
+        return keys.get_data().size();
+    }
     void insert(const K &key, const V &value);
     LmsIterator<K, V> find(const K &key) const;
     bool contains(const K &key) const {

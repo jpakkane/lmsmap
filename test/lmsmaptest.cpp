@@ -84,34 +84,32 @@ public:
     void multi_insert_test() {
         std::map<std::string, int> truth;
         LmsMap<std::string, int> trial;
-        std::string key1("bbb");
-        std::string key2("ccc");
-        std::string key3("aaa");
-        int value1 = 5;
-        int value2 = 99;
-        int value3 = -3;
+        std::vector<std::string> data{{"bbb"}, {"aaa"}, {"ccc"},
+        {"aouvawenJaauigasdnfkmj0n34nma0"}, {"abc"}};
 
         check_equal(truth, trial);
+        int v=0;
+        std::string::size_type totalsize = 0;
+        for(const auto &i : data) {
+            truth[i] = v;
+            trial.insert(i, v);
+            v++;
+            totalsize += i.size();
+            print(trial);
+            check_equal(truth, trial);
+            assert(totalsize == trial.keyblock_size());
+        }
 
-        truth[key1] = value1;
-        trial.insert(key1, value1);
+        truth["ccc"] = -1;
+        trial.insert("ccc", -1);
         print(trial);
         check_equal(truth, trial);
-
-        truth[key2] = value2;
-        trial.insert(key2, value2);
-        print(trial);
-        check_equal(truth, trial);
-
-        truth[key3] = value3;
-        trial.insert(key3, value3);
-        print(trial);
-        check_equal(truth, trial);
-}
+    }
 
 private:
     void print(LmsMap<std::string, int> &m) {
         std::cout << "Keys size: " << m.keys.size() << ".\n";
+        std::cout << "Keyblock size: " << m.keyblock_size() << ".\n";
         std::cout << "Values size: " << m.values.size() << ".\n";
         std::cout << "Flat data size: " << m.keys.data.size() << ".\n";
         std::cout << "Flat offsets: ";
