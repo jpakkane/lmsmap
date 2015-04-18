@@ -24,6 +24,177 @@
 
 namespace lms {
 
+
+template<typename K>
+class FlatHolder;
+
+template<typename K>
+class FlatProxy final {
+private:
+    typedef typename FlatHolder<K>::value_type value_type;
+    typedef typename FlatHolder<K>::offset_type offset_type;
+
+    const FlatHolder<K> *holder;
+    value_type start;
+    value_type end;
+
+
+public:
+    FlatProxy(const FlatHolder<K> *holder, offset_type start, offset_type end) :
+    holder(holder), start(start), end(end) {
+    }
+
+    offset_type size() const {
+        return end - start;
+    }
+
+    bool operator==(const K &other) const {
+        /*
+        return std::equal(holder->data.begin()+start, holder->data.begin()+end,
+                other.begin(), other.end());
+                */
+        return true; //FIXME
+    }
+
+    bool operator!=(const K &other) const {
+        return !(*this == other);
+    }
+
+    bool operator<(const K &other) const {
+        return true; //FIXME
+    }
+
+};
+
+template<typename Container, typename K>
+class FlatIterator final {
+public:
+    typedef typename Container::value_type value_type;
+    typedef typename Container::offset_type offset_type;
+
+    typedef std::random_access_iterator_tag iterator_category;
+    typedef typename Container::difference_type difference_type;
+    typedef value_type* pointer;
+    typedef value_type& reference;
+
+private:
+    Container *fh;
+    offset_type index;
+
+public:
+    FlatIterator(Container *fh, offset_type index) : fh(fh), index(index) {
+    }
+
+    FlatIterator(const FlatIterator<Container, K> &other) = default;
+    ~FlatIterator() = default;
+
+    bool operator==(const FlatIterator<Container, K> &other) const {
+        return index == other.index;
+    }
+
+    bool operator!=(const FlatIterator<Container, K> &other) const {
+        return !(*this == other);
+    }
+
+    offset_type operator-(const FlatIterator<Container, K> &other) const {
+        return index - other.index;
+    }
+
+    FlatProxy<K> operator*() const {
+        return FlatProxy<K>(fh, fh->offsets[index], fh->end_of(index));
+    }
+
+    FlatIterator<Container, K>& operator++() {
+        index++;
+        return *this;
+    }
+
+    FlatIterator<Container, K> operator++(int) {
+        FlatIterator old(*this);
+        index++;
+        return old;
+    }
+
+    FlatIterator<Container, K> operator+=(const difference_type increment) {
+        index += increment;
+        return *this;
+    }
+
+    bool operator<(const FlatIterator<Container, K> &other) const {
+        return index < other.index;
+    }
+
+    bool operator<(const K &value) const {
+        return true; // FIXME
+    }
+    bool operator==(const K &value) const {
+        return true; // FIXME
+    }
+};
+
+template<typename K>
+class FlatHolder final {
+public:
+    typedef typename K::value_type value_type;
+    typedef typename std::vector<K>::size_type offset_type;
+    typedef typename std::vector<K>::difference_type difference_type;
+
+private:
+    std::vector<value_type> data;
+    std::vector<offset_type> offsets;
+
+    friend class FlatIterator<FlatHolder<K>, K>;
+    friend class FlatIterator<const FlatHolder<K>, K>;
+    friend class FlatProxy<K>;
+
+public:
+
+    FlatHolder() {}
+    ~FlatHolder() {}
+
+    FlatIterator<FlatHolder, K> begin(){
+        return FlatIterator<FlatHolder, K>(this, 0);
+    }
+    FlatIterator<FlatHolder, K> end() {
+        return FlatIterator<FlatHolder, K>(this, offsets.size());
+    }
+
+    FlatIterator<const FlatHolder, K> cbegin() const {
+        return FlatIterator<const FlatHolder, K>(this, 0);
+    }
+
+    FlatIterator<const FlatHolder, K> cend() const {
+        return FlatIterator<const FlatHolder, K>(this, offsets.size());
+    }
+
+    void insert(const FlatIterator<FlatHolder, K> &it, const K &value) {
+        auto increase = value.size();
+        auto offset_insertion_point = it - begin();
+        auto data_insertion_point = offsets[offset_insertion_point];
+
+        data.insert(data.begin() + data_insertion_point, value.begin(), value.end());
+        auto oldoffset = offsets[offset_insertion_point];
+        offsets.insert(offsets.begin()+offset_insertion_point, oldoffset);
+
+        for(offset_type i=offset_insertion_point+1; i<offsets.size(); i++) {
+            offsets[i] += increase;
+        }
+    }
+
+    offset_type size() const { return offsets.size(); }
+
+    offset_type end_of(const offset_type &off) const {
+        return off < offsets.size()-1 ? offsets[off+1] : data.size();
+    }
+
+    K operator[](const offset_type &off) const {
+        auto start = offsets[off];
+        auto end = end_of(off);
+        return K(data[start], data[end]);
+    }
+};
+
+
 template<typename K, typename V>
 class LmsIterator;
 
@@ -54,7 +225,7 @@ public:
     friend class LmsIterator<K, V>;
 
 private:
-    std::vector<K> keys;
+    FlatHolder<K> keys;
     std::vector<V> values;
 };
 
@@ -108,9 +279,9 @@ void LmsMap<K, V>::insert(const K &key, const V &value) {
 
 template<typename K, typename V>
 LmsIterator<K, V> LmsMap<K, V>::find(const K &key) const {
-    auto res = std::lower_bound(keys.begin(), keys.end(), key);
-    if(res != keys.end() && *res == key) {
-        return LmsIterator<K, V>(this, res - keys.begin());
+    auto res = std::lower_bound(keys.cbegin(), keys.cend(), key);
+    if(res != keys.cend() && *res == key) {
+        return LmsIterator<K, V>(this, res - keys.cbegin());
     }
     return end();
 }
