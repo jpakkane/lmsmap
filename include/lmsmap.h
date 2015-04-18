@@ -49,11 +49,8 @@ public:
     }
 
     bool operator==(const K &other) const {
-        /*
         return std::equal(holder->data.begin()+start, holder->data.begin()+end,
-                other.begin(), other.end());
-                */
-        return true; //FIXME
+                other.begin());
     }
 
     bool operator!=(const K &other) const {
@@ -61,7 +58,8 @@ public:
     }
 
     bool operator<(const K &other) const {
-        return true; //FIXME
+        return std::lexicographical_compare(holder->data.begin()+start,
+                holder->data.begin() + end, other.begin(), other.end());
     }
 
 };
@@ -125,10 +123,11 @@ public:
     }
 
     bool operator<(const K &value) const {
-        return true; // FIXME
+        return **this < value;
     }
+
     bool operator==(const K &value) const {
-        return true; // FIXME
+        return **this == value;
     }
 };
 
@@ -146,6 +145,7 @@ private:
     friend class FlatIterator<FlatHolder<K>, K>;
     friend class FlatIterator<const FlatHolder<K>, K>;
     friend class FlatProxy<K>;
+    friend class LmsTester;
 
 public:
 
@@ -170,14 +170,20 @@ public:
     void insert(const FlatIterator<FlatHolder, K> &it, const K &value) {
         auto increase = value.size();
         auto offset_insertion_point = it - begin();
-        auto data_insertion_point = offsets[offset_insertion_point];
+        auto data_insertion_point = offset_insertion_point < offsets.size() ?
+                offsets[offset_insertion_point] : data.size();
 
         data.insert(data.begin() + data_insertion_point, value.begin(), value.end());
-        auto oldoffset = offsets[offset_insertion_point];
-        offsets.insert(offsets.begin()+offset_insertion_point, oldoffset);
+        bool need_adjustment = offset_insertion_point < offsets.size();
+        if(offset_insertion_point < offsets.size()) {
+            auto oldoffset = offsets[offset_insertion_point];
+            offsets.insert(offsets.begin()+offset_insertion_point, oldoffset);
 
-        for(offset_type i=offset_insertion_point+1; i<offsets.size(); i++) {
-            offsets[i] += increase;
+            for(offset_type i=offset_insertion_point+1; i<offsets.size(); i++) {
+                offsets[i] += increase;
+            }
+        } else {
+            offsets.push_back(offset_insertion_point);
         }
     }
 
@@ -190,7 +196,7 @@ public:
     K operator[](const offset_type &off) const {
         auto start = offsets[off];
         auto end = end_of(off);
-        return K(data[start], data[end]);
+        return K(&data[start], end-start);
     }
 };
 
@@ -223,6 +229,7 @@ public:
     }
 
     friend class LmsIterator<K, V>;
+    friend class LmsTester;
 
 private:
     FlatHolder<K> keys;

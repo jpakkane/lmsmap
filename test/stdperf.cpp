@@ -81,7 +81,9 @@ int main(int argc, char **argv) {
     } else {
         queryfile = datafile;
     }
+    std::cout << "Insert test\n";
     insert_test(m, datafile);
+    std::cout << "\n\nQuery test\n";
     query_test(m, queryfile);
     return 0;
 }
