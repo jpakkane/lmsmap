@@ -28,6 +28,7 @@ void insert_test() {
     LmsMap<std::string, int> m;
     std::string key("foo");
     int value = 3;
+    int value2 = 6;
 
     assert(m.size() == 0);
     assert(m.begin() == m.end());
@@ -46,6 +47,11 @@ void insert_test() {
 
     assert(yes.key() == key);
     assert(yes.value() == value);
+
+    m.insert(key, value2);
+    assert(m.size() == 1);
+    assert(m.find(key).value() == value2);
+
 }
 
 int main(int argc, char **argv) {

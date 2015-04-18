@@ -6,3 +6,5 @@ include_directories : inc)
 test('lmsmap', lms)
 
 executable('stdperf', 'stdperf.cpp')
+executable('lmsperf', 'lmsperf.cpp',
+include_directories : inc)

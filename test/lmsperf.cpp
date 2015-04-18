@@ -16,11 +16,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include<map>
 #include<string>
 #include<fstream>
 #include<iostream>
 #include<sys/time.h>
+#include"lmsmap.h"
 
 double timestamp() {
     struct timeval t;
@@ -28,7 +28,7 @@ double timestamp() {
     return t.tv_sec + t.tv_usec/(1000000.0);
 }
 
-void insert_test(std::map<std::string, int> &m, const char *ifilename) {
+void insert_test(LmsMap<std::string, int> &m, const char *ifilename) {
     std::ifstream ifile(ifilename);
     std::string line;
     int linenum=0;
@@ -39,7 +39,7 @@ void insert_test(std::map<std::string, int> &m, const char *ifilename) {
         if(line.find('\'') != std::string::npos) {
             continue;
         }
-        m[line] = linenum;
+        m.insert(line, linenum);
     }
     auto insertion_end = timestamp();
     auto insert_speed = m.size() / (insertion_end - insertion_start);
@@ -47,7 +47,7 @@ void insert_test(std::map<std::string, int> &m, const char *ifilename) {
 
 }
 
-void query_test(const std::map<std::string, int> &m, const char *ifilename) {
+void query_test(const LmsMap<std::string, int> &m, const char *ifilename) {
     std::ifstream ifile(ifilename);
     std::string line;
     auto query_start = timestamp();
@@ -67,7 +67,7 @@ void query_test(const std::map<std::string, int> &m, const char *ifilename) {
 }
 
 int main(int argc, char **argv) {
-    std::map<std::string, int> m;
+    LmsMap<std::string, int> m;
     const char *datafile;
     const char *queryfile;
     if(argc >= 1) {

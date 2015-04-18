@@ -93,8 +93,12 @@ void LmsMap<K, V>::insert(const K &key, const V &value) {
     auto key_location = std::lower_bound(keys.begin(), keys.end(), key);
     auto offset = key_location - keys.begin();
     auto value_location = values.begin() + offset;
-    keys.insert(key_location, key);
-    values.insert(value_location, value);
+    if(static_cast<size_type>(offset) < keys.size() && keys[offset] == key) {
+        values[offset] = value;
+    } else {
+        keys.insert(key_location, key);
+        values.insert(value_location, value);
+    }
 }
 
 template<typename K, typename V>
