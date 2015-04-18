@@ -19,6 +19,7 @@
 #include"lmsmap.h"
 #include<cassert>
 #include<iostream>
+#include<map>
 
 namespace lms {
 class LmsTester final {
@@ -61,9 +62,52 @@ public:
         m.insert(key, value2);
         assert(m.size() == 1);
         assert(m.find(key).value() == value2);
-
     }
 
+    void check_equal(std::map<std::string, int> &truth, LmsMap<std::string, int> &trial) {
+        assert(truth.size() == trial.size());
+        auto trial_iter = trial.begin();
+        for(auto truth_iter = truth.begin(); truth_iter != truth.end(); ++truth_iter, ++trial_iter) {
+            if (!(truth_iter->first == trial_iter.key())) {
+                std::cout << "Key mismatch, truth " << truth_iter->first << " trial "
+                        << trial_iter.key() << "\n";
+                assert(0);
+            }
+            if(!(truth_iter->second == trial_iter.value())) {
+                std::cout << "Value mismatch, truth " << truth_iter->second << " trial "
+                        << trial_iter.value() << "\n";
+                assert(0);
+            }
+        }
+    }
+
+    void multi_insert_test() {
+        std::map<std::string, int> truth;
+        LmsMap<std::string, int> trial;
+        std::string key1("bbb");
+        std::string key2("ccc");
+        std::string key3("aaa");
+        int value1 = 5;
+        int value2 = 99;
+        int value3 = -3;
+
+        check_equal(truth, trial);
+
+        truth[key1] = value1;
+        trial.insert(key1, value1);
+        print(trial);
+        check_equal(truth, trial);
+
+        truth[key2] = value2;
+        trial.insert(key2, value2);
+        print(trial);
+        check_equal(truth, trial);
+
+        truth[key3] = value3;
+        trial.insert(key3, value3);
+        print(trial);
+        check_equal(truth, trial);
+}
 
 private:
     void print(LmsMap<std::string, int> &m) {
@@ -97,6 +141,8 @@ int main(int argc, char **argv) {
     t.default_test();
     std::cout << "\n\nInsert test\n";
     t.insert_test();
+    std::cout << "\n\nMulti-insert test\n";
+    t.multi_insert_test();
     return 0;
 #endif
 }

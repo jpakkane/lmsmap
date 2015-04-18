@@ -24,7 +24,6 @@
 
 namespace lms {
 
-
 template<typename K>
 class FlatHolder;
 
@@ -183,7 +182,7 @@ public:
                 offsets[i] += increase;
             }
         } else {
-            offsets.push_back(offset_insertion_point);
+            offsets.push_back(data_insertion_point);
         }
     }
 
@@ -254,11 +253,11 @@ public:
 
     ~LmsIterator() {}
 
-    bool operator==(const LmsIterator &other) {
+    bool operator==(const LmsIterator<K, V> &other) {
         return index == other.index;
     }
 
-    bool operator!=(const LmsIterator &other) {
+    bool operator!=(const LmsIterator<K, V> &other) {
         return !(*this == other);
     }
 
@@ -268,6 +267,11 @@ public:
 
     const V value() const {
         return map->values[index];
+    }
+
+    LmsIterator<K, V> operator++() {
+        index++;
+        return *this;
     }
 };
 
