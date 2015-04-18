@@ -28,19 +28,10 @@ double timestamp() {
     return t.tv_sec + t.tv_usec/(1000000.0);
 }
 
-
-int main(int argc, char **argv) {
-    std::map<std::string, int> m;
-    int linenum = 0;
-    const char *datafile;
-    if(argc >= 1) {
-        datafile = argv[1];
-    } else {
-        datafile = "/usr/share/dict/words";
-    }
-
-    std::ifstream ifile(datafile);
+void insert_test(std::map<std::string, int> m, const char *ifilename) {
+    std::ifstream ifile(ifilename);
     std::string line;
+    int linenum=0;
     auto insertion_start = timestamp();
     while(!ifile.eof()) {
         std::getline(ifile, line);
@@ -53,5 +44,38 @@ int main(int argc, char **argv) {
     auto insertion_end = timestamp();
     auto insert_speed = m.size() / (insertion_end - insertion_start);
     std::cout << "Insertion speed: " << insert_speed << " elems/s\n";
+
+}
+
+void query_test(const std::map<std::string, int> m, const char *ifilename) {
+    std::ifstream ifile(ifilename);
+    std::string line;
+    auto query_start = timestamp();
+    int found = 0;
+    int notfound = 0;
+    while(!ifile.eof()) {
+        std::getline(ifile, line);
+        if(m.find(line) != m.end()) {
+            found++;
+        } else {
+            notfound++;
+        }
+    }
+    auto query_end = timestamp();
+    auto query_speed = (found + notfound) / (query_end - query_start);
+    std::cout << "Query speed: " << query_speed << " q/s\n";
+}
+
+int main(int argc, char **argv) {
+    std::map<std::string, int> m;
+    const char *datafile;
+    if(argc >= 1) {
+        datafile = argv[1];
+    } else {
+        datafile = "/usr/share/dict/words";
+    }
+
+    insert_test(m, datafile);
+    query_test(m, datafile);
     return 0;
 }
