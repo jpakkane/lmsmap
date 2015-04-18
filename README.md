@@ -16,7 +16,8 @@ queries.
 
 The following numbers compare a std::map<std::string, int> to
 lms::LmsMap<std::string, int>. The test data used is the standard
-/usr/share/dict/words (with the possessive forms removed).
+/usr/share/dict/words (with the possessive forms removed). The
+platform is 64bit Ubuntu Vivid under VirtualBox.
 
 Massif says std::map uses 5.6 MB of memory while lmsmap uses
 2.6. I suspect that these numbers are a bit fishy, because
