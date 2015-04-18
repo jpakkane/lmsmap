@@ -28,7 +28,17 @@ void insert_test() {
     LmsMap<std::string, int> m;
     std::string key("foo");
     int value = 3;
+
+    assert(m.size() == 0);
+    assert(m.begin() == m.end());
+    assert(!(m.begin() != m.end()));
+
     m.insert(key, value);
+
+    assert(m.size() == 1);
+    assert(!(m.begin() == m.end()));
+    assert(m.begin() != m.end());
+
 }
 
 int main(int argc, char **argv) {

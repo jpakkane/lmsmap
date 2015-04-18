@@ -23,14 +23,58 @@
 #include<algorithm>
 
 template<typename K, typename V>
+class LmsIterator;
+
+template<typename K, typename V>
 class LmsMap {
 public:
 
+    typedef typename K::size_type size_type;
+
     void insert(const K &key, const V &value);
+
+    LmsIterator<K, V> begin() const {
+        return LmsIterator<K, V>(this, 0);
+    }
+
+    LmsIterator<K, V> end() const {
+        return LmsIterator<K, V>(this, keys.size());
+    }
+
+    size_type size() const {
+        return keys.size();
+    }
 
 private:
     std::vector<K> keys;
     std::vector<V> values;
+};
+
+template<typename K, typename V>
+class LmsIterator {
+private:
+    typedef typename K::size_type index_type;
+    const LmsMap<K, V> *map;
+    index_type index = 0;
+
+public:
+
+    LmsIterator(const LmsMap<K, V> *m, index_type index) : map(m), index(index) {
+    }
+
+    LmsIterator(const LmsIterator &other) = default;
+    LmsIterator(LmsIterator &&other) = default;
+    LmsIterator& operator=(const LmsIterator &other) = default;
+
+    ~LmsIterator() {}
+
+    bool operator==(const LmsIterator &other) {
+        return index == other.index;
+    }
+
+    bool operator!=(const LmsIterator &other) {
+        return !(*this == other);
+    }
 };
 
 template<typename K, typename V>
