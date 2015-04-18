@@ -30,7 +30,7 @@ public:
 
     void insert_test() {
         LmsMap<std::string, int> m;
-        std::string key("foo");
+        const std::string key("foo");
         int value = 3;
         int value2 = 6;
 

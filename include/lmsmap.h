@@ -34,8 +34,8 @@ private:
     typedef typename FlatHolder<K>::offset_type offset_type;
 
     const FlatHolder<K> *holder;
-    value_type start;
-    value_type end;
+    offset_type start;
+    offset_type end;
 
 
 public:
@@ -57,8 +57,10 @@ public:
     }
 
     bool operator<(const K &other) const {
-        return std::lexicographical_compare(holder->data.begin()+start,
-                holder->data.begin() + end, other.begin(), other.end());
+        auto hstart = holder->data.begin() + start;
+        auto hend = holder->data.begin() + end;
+        return std::lexicographical_compare(hstart, hend,
+                other.cbegin(), other.cend());
     }
 
 };
@@ -175,7 +177,6 @@ public:
                 offsets[offset_insertion_point] : data.size();
 
         data.insert(data.begin() + data_insertion_point, value.begin(), value.end());
-        bool need_adjustment = offset_insertion_point < offsets.size();
         if(offset_insertion_point < offsets.size()) {
             auto oldoffset = offsets[offset_insertion_point];
             offsets.insert(offsets.begin()+offset_insertion_point, oldoffset);
@@ -191,7 +192,13 @@ public:
     offset_type size() const { return offsets.size(); }
 
     offset_type end_of(const offset_type &off) const {
-        return off < offsets.size()-1 ? offsets[off+1] : data.size();
+        auto result = off < offsets.size()-1 ? offsets[off+1] : data.size();
+        return result;
+    }
+
+    void shrink_to_fit() {
+        data.shrink_to_fit();
+        offsets.shrink_to_fit();
     }
 
     K operator[](const offset_type &off) const {
@@ -226,12 +233,20 @@ public:
     size_type keyblock_size() const {
         return keys.get_data().size();
     }
+
+    size_type keyblock_capacity() const {
+        return keys.get_data().capacity();
+    }
     void insert(const K &key, const V &value);
     LmsIterator<K, V> find(const K &key) const;
     bool contains(const K &key) const {
         return find(key) != end();
     }
 
+    void shrink_to_fit() {
+        keys.shrink_to_fit();
+        values.shrink_to_fit();
+    }
     friend class LmsIterator<K, V>;
     friend class LmsTester;
 

@@ -84,6 +84,11 @@ int main(int argc, char **argv) {
         queryfile = datafile;
     }
     insert_test(m, datafile);
+    std::cout << "Key block capacity before shrink: " << m.keyblock_capacity() << ".\n";
+    m.shrink_to_fit();
     query_test(m, queryfile);
+    std::cout << "Size: " << m.size() << ".\n";
+    std::cout << "Key block size: " << m.keyblock_size() << ".\n";
+    std::cout << "Key block capacity: " << m.keyblock_capacity() << ".\n";
     return 0;
 }
