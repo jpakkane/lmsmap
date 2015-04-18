@@ -32,6 +32,14 @@ for lmsmap. This is expected as middle insertions are very slow.
 If insertions are done in sorted order std::map does 1200k items/s
 but lmsmap does a whopping 3700k items/s.
 
+# Contributing
+
+For various reasons I need to keep the copyright on this code all
+to myself. This means that in order to accept patches I would need
+to do all the legal stuff of copyright assignments and all that.
+I have no interest in that so therefore submissions from third parties
+are not accepted. Sorry. Feel free to fork the code on your own, though.
+
 # Contact
 
 jpakkane at gmail dot com
