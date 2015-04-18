@@ -20,13 +20,25 @@
 
 #include<string>
 #include<vector>
+#include<algorithm>
 
 template<typename K, typename V>
 class LmsMap {
 public:
 
+    void insert(const K &key, const V &value);
 
 private:
     std::vector<K> keys;
     std::vector<V> values;
 };
+
+template<typename K, typename V>
+void LmsMap<K, V>::insert(const K &key, const V &value) {
+    auto key_location = std::lower_bound(keys.begin(), keys.end(), key);
+    auto offset = key_location - keys.begin();
+    auto value_location = values.begin() + offset;
+    keys.insert(key_location, key);
+    values.insert(value_location, value);
+}
+

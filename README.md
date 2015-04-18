@@ -6,7 +6,8 @@ it as std::map<std::string, T>. However it has some special
 design features:
 
 - low memory usage
+- cache friendliness
 - insertions can be very slow
 
-It is designed for cases where you build the structure
-once and query it often.
+It is designed for cases where you have few updates but many
+queries.

@@ -24,12 +24,20 @@ void default_test() {
     LmsMap<std::string, int> m;
 }
 
+void insert_test() {
+    LmsMap<std::string, int> m;
+    std::string key("foo");
+    int value = 3;
+    m.insert(key, value);
+}
+
 int main(int argc, char **argv) {
 #ifdef NDEBUG
     std::cout << "NDEBUG defined, tests won't work.\n";
     return 1;
 #else
     default_test();
+    insert_test();
     return 0;
 #endif
 }
