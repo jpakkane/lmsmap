@@ -26,12 +26,10 @@ template<typename K, typename V>
 class LmsIterator;
 
 template<typename K, typename V>
-class LmsMap {
+class LmsMap final {
 public:
 
     typedef typename K::size_type size_type;
-
-    void insert(const K &key, const V &value);
 
     LmsIterator<K, V> begin() const {
         return LmsIterator<K, V>(this, 0);
@@ -45,13 +43,18 @@ public:
         return keys.size();
     }
 
+    void insert(const K &key, const V &value);
+    LmsIterator<K, V> find(const K &key) const;
+
+    friend class LmsIterator<K, V>;
+
 private:
     std::vector<K> keys;
     std::vector<V> values;
 };
 
 template<typename K, typename V>
-class LmsIterator {
+class LmsIterator final {
 private:
     typedef typename K::size_type index_type;
     const LmsMap<K, V> *map;
@@ -75,6 +78,14 @@ public:
     bool operator!=(const LmsIterator &other) {
         return !(*this == other);
     }
+
+    const K key() const {
+        return map->keys[index];
+    }
+
+    const V value() const {
+        return map->values[index];
+    }
 };
 
 template<typename K, typename V>
@@ -86,3 +97,11 @@ void LmsMap<K, V>::insert(const K &key, const V &value) {
     values.insert(value_location, value);
 }
 
+template<typename K, typename V>
+LmsIterator<K, V> LmsMap<K, V>::find(const K &key) const {
+    auto res = std::lower_bound(keys.begin(), keys.end(), key);
+    if(res != keys.end() && *res == key) {
+        return LmsIterator<K, V>(this, res - keys.begin());
+    }
+    return end();
+}

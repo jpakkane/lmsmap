@@ -39,6 +39,13 @@ void insert_test() {
     assert(!(m.begin() == m.end()));
     assert(m.begin() != m.end());
 
+    auto yes = m.find(key);
+    auto no = m.find("notthere");
+    assert(yes != m.end());
+    assert(no == m.end());
+
+    assert(yes.key() == key);
+    assert(yes.value() == value);
 }
 
 int main(int argc, char **argv) {
