@@ -22,6 +22,8 @@
 #include<sys/time.h>
 #include"lmsmap.h"
 
+using namespace lms;
+
 double timestamp() {
     struct timeval t;
     gettimeofday(&t, nullptr);
@@ -70,13 +72,13 @@ int main(int argc, char **argv) {
     LmsMap<std::string, int> m;
     const char *datafile;
     const char *queryfile;
-    if(argc >= 1) {
+    if(argc > 1) {
         datafile = argv[1];
     } else {
         datafile = "/usr/share/dict/words";
     }
 
-    if(argc >= 2) {
+    if(argc > 2) {
         queryfile = argv[2];
     } else {
         queryfile = datafile;

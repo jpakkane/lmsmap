@@ -22,6 +22,8 @@
 #include<vector>
 #include<algorithm>
 
+namespace lms {
+
 template<typename K, typename V>
 class LmsIterator;
 
@@ -45,6 +47,9 @@ public:
 
     void insert(const K &key, const V &value);
     LmsIterator<K, V> find(const K &key) const;
+    bool contains(const K &key) const {
+        return find(key) != end();
+    }
 
     friend class LmsIterator<K, V>;
 
@@ -108,4 +113,6 @@ LmsIterator<K, V> LmsMap<K, V>::find(const K &key) const {
         return LmsIterator<K, V>(this, res - keys.begin());
     }
     return end();
+}
+
 }

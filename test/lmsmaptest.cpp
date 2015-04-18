@@ -20,6 +20,8 @@
 #include<cassert>
 #include<iostream>
 
+using namespace lms;
+
 void default_test() {
     LmsMap<std::string, int> m;
 }
@@ -39,6 +41,9 @@ void insert_test() {
     assert(m.size() == 1);
     assert(!(m.begin() == m.end()));
     assert(m.begin() != m.end());
+
+    assert(m.contains(key));
+    assert(!m.contains("notthere"));
 
     auto yes = m.find(key);
     auto no = m.find("notthere");
