@@ -11,3 +11,26 @@ design features:
 
 It is designed for cases where you have few updates but many
 queries.
+
+# Performance
+
+The following numbers compare a std::map<std::string, int> to
+lms::LmsMap<std::string, int>. The test data used is the standard
+/usr/share/dict/words (with the possessive forms removed).
+
+Massif says std::map uses 5.6 MB of memory while lmsmap uses
+2.6. I suspect that these numbers are a bit fishy, because
+just printing out lmsmap's container sizes gives a smaller
+number.
+
+Query speed is ~900k q/s for std::map and 1800k q/s for lmsmap,
+so lms is more than 2x as fast.
+
+Insertion speed is 700k items/s for std::map and 35k items/s
+for lmsmap. This is expected as middle insertions are very slow.
+If insertions are done in sorted order std::map does 1200k items/s
+but lmsmap does a whopping 3700k items/s.
+
+# Contact
+
+jpakkane at gmail dot com
